@@ -1,0 +1,67 @@
+---------CONFIGURATIONS--------------
+CREATE TABLE [dbo].[configurations] (
+    [Id]          INT           IDENTITY (1, 1) NOT NULL,
+    [title]       VARCHAR (100) NOT NULL,
+    [description] TEXT          DEFAULT ('Descrizione non presente') NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+
+---------GUESTS-----------------------
+CREATE TABLE [dbo].[guests] (
+    [Id]                 INT           IDENTITY (1, 1) NOT NULL,
+    [name]               VARCHAR (100) NOT NULL,
+    [surname]            VARCHAR (100) NOT NULL,
+    [date_of_birth]      DATETIME      NOT NULL,
+    [document]           VARCHAR (30)  NOT NULL,
+    [number_of_document] VARCHAR (30)  NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+
+---------GUESTS_RESERVATIONS------------
+CREATE TABLE [dbo].[guests_reservations] (
+    [guest_id]       INT NOT NULL,
+    [reservation_id] INT NOT NULL,
+    CONSTRAINT [FK_guests_reservations_guests] FOREIGN KEY ([guest_id]) REFERENCES [dbo].[guests] ([Id]),
+    CONSTRAINT [FK_guests_reservations_reservations] FOREIGN KEY ([reservation_id]) REFERENCES [dbo].[reservations] ([Id])
+);
+
+---------PAYMENTS---------------
+CREATE TABLE [dbo].[payments] (
+    [Id]                 INT            IDENTITY (1, 1) NOT NULL,
+    [reservation_id]     INT            NOT NULL,
+    [status]             VARCHAR (50)   NOT NULL,
+    [number_of_payments] TINYINT        NOT NULL,
+    [amount_paid]        DECIMAL (6, 2) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_payments_reservations] FOREIGN KEY ([reservation_id]) REFERENCES [dbo].[reservations] ([Id])
+);
+
+-----------RESERVATIONS---------
+CREATE TABLE [dbo].[reservations] (
+    [Id]                  INT            IDENTITY (1, 1) NOT NULL,
+    [configuration_id]    INT            NOT NULL,
+    [code_of_reservation] CHAR (15)      NOT NULL,
+    [amount]              DECIMAL (6, 2) NOT NULL,
+    [state]               VARCHAR (50)   NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_reservations_configurations] FOREIGN KEY ([configuration_id]) REFERENCES [dbo].[configurations] ([Id])
+);
+
+---------RESERVATIONS_ROOMS---------
+CREATE TABLE [dbo].[reservations_rooms] (
+    [reservation_id] INT NOT NULL,
+    [room_id]        INT NOT NULL,
+    CONSTRAINT [FK_reservations_rooms_reservations] FOREIGN KEY ([reservation_id]) REFERENCES [dbo].[reservations] ([Id]),
+    CONSTRAINT [FK_reservations_rooms_rooms] FOREIGN KEY ([room_id]) REFERENCES [dbo].[rooms] ([Id])
+);
+
+--------ROOMS---------
+CREATE TABLE [dbo].[rooms] (
+    [Id]             INT          NOT NULL,
+    [reservation_id] INT          NOT NULL,
+    [number_of_room] SMALLINT     NOT NULL,
+    [floor]          SMALLINT     NOT NULL,
+    [number_of_bed]  TINYINT      NULL,
+    [size_of_room]   VARCHAR (50) NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
